@@ -3,7 +3,6 @@ class Bug{
         this.id = id;
         this.order = order;
         this.hatchTemp = [];
-        this.size = [];
         this.subspecies = subspecies;
         this.color = color;
     }
