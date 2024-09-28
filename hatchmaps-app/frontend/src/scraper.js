@@ -6,27 +6,35 @@ const temps = async () => {
     const browser = await puppeteer.launch(); //launch the browser
     const page = await browser.newPage(); // make new tab
     await page.goto(url); //got to url
-
-    await page.screenshot({ path: 'screenshot.png'});
-    await browser.close();
-
-    /*
-    const allTd = await page.evaluate(() => {
-        const trData =  document.querySelectorAll('body > table > tbody > tr > td');
-
-        return Array.from(trData).slice(0, 9).map((td) => {
-            const idElement = td.querySelector('td').href;
-            const idNum = tdElement && tdElement.querySelector('a') ? tdElement.querySelector('a').href : null;
-            return {idNum};
-        });
+    page.on('console', msg => {
+        for (let i = 0; i < msg.args().length; ++i) {
+            console.log(`PAGE LOG: ${msg.args()[i]}`);
+        }
     });
 
-    if (allTd.length === 0) {
-        throw new Error('No matching elements found.');
-    }
+    const trdata = await page.evaluate(() => {
+        const tbodyElements =  document.querySelectorAll('body > table > tbody');
+        const tbody = tbodyElements[1];
+        if (!tbody) {
+            console.log("The <tbody> element was not found on the page.");
+        }
+        console.log('Content of <tbody>:', tbody.innerHTML);
+        const trElements = tbody.querySelectorAll('tr');
+        return Array.from(trElements).map(tr => {
+            const tdElements = tr.querySelectorAll('td'); // Select all <td> elements within the <tr>
 
-    console.log(allTd);
-    */
+            
+            const idNumText = tdElements[0]?.querySelector('a')?.textContent.trim() || 'N/A'; //Question marks are optional chaining, wont throw and error if it is null
+            const idNum = !isNaN(idNumText) && idNumText !== '' ? Number(idNumText) : 'N/A';
+            const waterBody = tdElements[1]?.textContent.trim() || 'N/A';
+            const dateTime = tdElements[2]?.textContent.trim() || 'N/A';
+            const temp = tdElements[3]?.querySelector('span')?.textContent.trim() || 'N/A';
+            
+            console.log(idNum, waterBody, dateTime, temp); //Log the data found
+            return {idNum, waterBody, dateTime, temp};
+        });
+    });
+    await browser.close();
 };
 
 temps();
