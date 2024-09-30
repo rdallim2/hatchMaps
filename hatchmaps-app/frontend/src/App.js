@@ -2,6 +2,39 @@ import * as React from 'react';
 import { useState } from "react";
 import Map, {Marker, Popup} from 'react-map-gl';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
+import axios from 'axios';
+import {
+  willametteAtCorvallis,
+  willametteBelowFalls,
+  mfWillametteAboveSnakeCreek,
+  mckenzieAboveSouthFork,
+  mckenzieAboveHaydenBridge,
+  mckenzieNearCoburg,
+  metoliusNearGrandview
+} from './data/Data';
+const siteList = [
+  willametteAtCorvallis,
+  willametteBelowFalls,
+  mfWillametteAboveSnakeCreek,
+  mckenzieAboveSouthFork,
+  mckenzieAboveHaydenBridge,
+  mckenzieNearCoburg,
+  metoliusNearGrandview,
+];
+
+const allTemps = () => {
+  const [temps, settemps] = useState([]);
+
+  useEffect(() => {
+    axios.get('/temps')
+    .then(response => {
+      settemps(response.data);
+    })
+    .catch(error => {
+      console.error('error fetching temps:', error);
+    });
+  }, []);
+};
 
 function App() {
   const [viewState, setViewState] = useState({
@@ -29,16 +62,26 @@ function App() {
           style={{fontSize: viewState.zoom * 4, color: "red"}} // Customize icon color
         />
       </Marker>
-      {showPopup && (
-      <Popup longitude={-121.4839433} latitude={44.6262275}
-        anchor="top"
-        onClose={() => setShowPopup(false)}>
+
+      console.log(Sites);
+
+    {showPopup &&
+      siteList.map((site) => (
+        <Popup
+          key={site.id} // Always add a unique key when rendering lists in React
+          longitude={site.long}
+          latitude={site.lat}
+          anchor="top"
+          onClose={() => setShowPopup(false)}
+        >
           <div className="card">
-            <label>Body of Water: </label>
-            <label></label>
+            <label>{site.name}</label>
+            <label>Body of Water: {site.bodyOfWater.name}</label>
           </div>
-        You are here
-      </Popup>)}
+          You are here
+        </Popup>
+      ))
+    };
     </Map>
   );
 }
