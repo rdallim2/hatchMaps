@@ -10,10 +10,13 @@ class WaterBody{
 
   // Method to add a bug and its associated time
   addBug(bug, time) {
-    this.bugs[bug.id] = {
-      bug, // Bug object
-      time, // Associated time
-    };
+    if(bug instanceof Bug){
+      this.bugs[bug.id] = {
+        bug, // Bug object
+        time: [], // Associated time
+      };
+      this.bugs[bug.id].time.push(time); 
+    } 
   }
 
   // Method to get all bugs and their times
