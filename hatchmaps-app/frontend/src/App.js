@@ -26,7 +26,7 @@ const allTemps = () => {
   const [temps, settemps] = useState([]);
 
   useEffect(() => {
-    axios.get('/temps')
+    axios.get('http://localhost:5933/temps')
     .then(response => {
       settemps(response.data);
     })

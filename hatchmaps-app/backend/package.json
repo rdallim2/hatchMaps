@@ -2,7 +2,6 @@
     "name": "backend",
     "version": "1.0.0",
     "main": "index.js",
-    "devDependencies": {},
     "type": "module",
     "scripts": {
         "start": "nodemon index.js",
@@ -14,6 +13,7 @@
     "dependencies": {
         "bcrypt": "^5.1.1",
         "dotenv": "^16.4.5",
+        "node-cron": "^3.0.3",
         "puppeteer": "^23.4.1"
     },
     "proxy": "http://localhost:3000/api"
