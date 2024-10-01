@@ -1,5 +1,5 @@
-const puppeteer = require('puppeteer');
-const mysql = require('mysql2/promise');
+import puppeteer from 'puppeteer';
+import mysql from 'mysql2/promise';
 
 const connectionConfig = {
     host: 'localhost', // or your DB host
@@ -14,9 +14,14 @@ const temps = async () => {
 
     const connection = await mysql.createConnection(connectionConfig);
 
+    const deleteData = 'DELETE FROM new_table';
+    await connection.execute(deleteData);
+    console.log("Old data deleted from db");
+
     const browser = await puppeteer.launch(); //launch the browser
     const page = await browser.newPage(); // make new tab
     await page.goto(url); //got to url
+
     page.on('console', msg => {
         for (let i = 0; i < msg.args().length; ++i) {
             console.log(`PAGE LOG: ${msg.args()[i]}`);
@@ -52,9 +57,11 @@ const temps = async () => {
         await connection.execute(query, [idNum, waterBody, dateTime, temp]);
     }
 
+    console.log("New data entered into the DB.");
+
 
     await browser.close();
     await connection.end();
 }   
 
-temps();
+export default temps;
