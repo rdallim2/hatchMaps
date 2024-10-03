@@ -6,6 +6,9 @@ import mysql from 'mysql2';
 import connection from './routes/db.js';
 import temps from './scraper.js';
 import cron from 'node-cron';
+import cors from 'cors';
+
+app.use(cors());
 
 
 dotenv.config();
@@ -41,6 +44,10 @@ cron.schedule('0 * * * *', async () => {
 
 // process.env from dotenv, to prevent link from beign displayable on git
 
+app.use('/', router);
+
 app.listen(5933, ()=>{
-    console.log("Backend server is running.");
+    const host = 'localhost'; // or use the actual host if needed
+    const port = 5933;
+    console.log(`Backend server is running at http://${host}:${port}`);
 });

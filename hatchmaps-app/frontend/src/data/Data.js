@@ -67,12 +67,13 @@ const mckenzieNearCoburg = new Site(14165500, 'Mckenzie River Near Coburg', mcke
 //METOLIUS
 const metoliusNearGrandview = new Site(14091500, 'Metolius River Near Grandview', mckenzieRiver, 44.6262275, -121.4839433);
 
-export {
-    willametteAtCorvallis,
-    willametteBelowFalls,
-    mfWillametteAboveSnakeCreek,
-    mckenzieAboveSouthFork,
-    mckenzieAboveHaydenBridge,
-    mckenzieNearCoburg,
-    metoliusNearGrandview
-};
+export const sites = {
+    14171600: willametteAtCorvallis,
+    14207770: willametteBelowFalls,
+    14144790: mfWillametteAboveSnakeCreek,
+    14159110: mckenzieAboveSouthFork,
+    14164900: mckenzieAboveHaydenBridge,
+    14165500: mckenzieNearCoburg,
+    14091500: metoliusNearGrandview
+  };
+  
