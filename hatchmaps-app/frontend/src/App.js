@@ -4,6 +4,7 @@ import Map, {Marker, Popup} from 'react-map-gl';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
 import { sites } from './data/Data';
+import celcToFar from './functions/functions.js';
 
 function App() {
   const [temps, settemps] = useState([]);
@@ -27,10 +28,13 @@ function App() {
 
   const updateSites = temps.map(temp => {
     const matchingSite = sites[temp.idNum];
+    console.log("looking for id num", temp.idNum);
     if (matchingSite){
+      console.log("Found match.");
+      console.log(matchingSite.lat);
       return {
         ...matchingSite,
-        temp: temp.temp,
+        temp: celcToFar(temp.temp),
         recentLogTime: temp.dateTime
       };
     }
@@ -60,22 +64,34 @@ function App() {
       console.log(Sites);
 
     {showPopup &&
-      updateSites.map((site) => (
-        <Popup
-          key={site.id} // Always add a unique key when rendering lists in React
-          longitude={site.long}
-          latitude={site.lat}
-          anchor="top"
-          onClose={() => setShowPopup(false)}
-        >
-          <div className="card">
-            <label>{site.name}</label>
-            <label>Body of Water: {site.bodyOfWater.name}</label>
-            <label>Recent Log Time: {site.recentLogTime}</label>
-            <label>Temperature: {site.temp}</label>
-          </div>
-          You are here
-        </Popup>
+    updateSites
+      .filter(site => site !== null)
+      .map((site) => (
+        <React.Fragment key={site.id}>
+          <Marker
+            latitude={site.lat}
+            longitude={site.long}
+            anchor="bottom" // Anchor position
+          >
+          <LocationOnIcon style={{fontSize: viewState.zoom * 4, color: "red"}} // Customize icon color
+        />
+          </Marker>
+          <Popup
+            key={site.id} // Always add a unique key when rendering lists in React
+            latitude={site.lat}
+            longitude={site.long}
+            anchor="top"
+            onClose={() => setShowPopup(false)}
+          >
+            <div className="card flex-center">
+              <div>
+                <label style={{ fontSize: '1.2em' }}>{site.name}</label>
+              </div>
+              <div>Recent Log Time: {site.recentLogTime}</div>
+              <div>Temperature: {site.temp}</div>
+            </div>
+          </Popup>
+        </React.Fragment>
       ))
     };
     </Map>
