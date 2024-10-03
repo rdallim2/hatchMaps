@@ -8,7 +8,7 @@ router.get('/', (req, res)=>{
 })
 
 router.get("/temps", async (req,res)=>{
-    connection.query('SELECT * FROM temps', (error, results, fields) =>{
+    connection.query('SELECT * FROM temps.new_table', (error, results, fields) =>{
         if (error) throw error;
         res.json(results);
     })
