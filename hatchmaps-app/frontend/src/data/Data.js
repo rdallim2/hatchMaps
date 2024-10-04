@@ -5,17 +5,17 @@ import Site from './Sites';
 
 
 //BUG DATA
-//id, order, hatchTemp, subspecies, color
+//id, name, order, hatchTemp, subspecies, color
 
-const caddisflyVarious = new Bug(1, 'caddisfly', [56, 66], 'various', 'various');
-const blueWingedOlive = new Bug(2, 'mayfly', [46, 56], 'blueWingedOlive', 'olive');
-const midgeVarious = new Bug(3, 'midge', [42, 90], 'various', 'various');
-const salmonfly = new Bug(4, 'stonefly', [55, 60], 'salmonfly', 'black');
-const goldenStonefly = new Bug(5, 'stonefly', [55, 60],  'goldenStonefly', 'gold');
-const paleMorningDun = new Bug(6, 'mayfly', [60, 65], 'paleMorningDun', 'paleYellow');
-const greenDrake = new Bug(7, 'mayfly', [55, 60], 'green', 'green');
-const octoberCaddis = new Bug(8, 'caddisfly', [56, 66], 'octoberCaddis', 'orange');
-const marchBrown = new Bug(9, 'mayfly', [46,56], 'marchBrown', 'brown');
+const caddisflyVarious = new Bug(1, 'Caddisfly- various', 'caddisfly', [56, 66], 'various', 'various');
+const blueWingedOlive = new Bug(2, 'Blue winged Olive', 'mayfly', [46, 56], 'blueWingedOlive', 'olive');
+const midgeVarious = new Bug(3, 'Midge- various', 'midge', [42, 90], 'various', 'various');
+const salmonfly = new Bug(4, 'Salmon Fly' ,'stonefly', [55, 60], 'salmonfly', 'black');
+const goldenStonefly = new Bug(5, 'Golden Stone Fly' ,'stonefly', [55, 60],  'goldenStonefly', 'gold');
+const paleMorningDun = new Bug(6, 'Pale Morning Dun' ,'mayfly', [60, 65], 'paleMorningDun', 'paleYellow');
+const greenDrake = new Bug(7, 'Green Drake' ,'mayfly', [55, 60], 'green', 'green');
+const octoberCaddis = new Bug(8, 'October Caddis' ,'caddisfly', [56, 66], 'octoberCaddis', 'orange');
+const marchBrown = new Bug(9, 'March Brown' ,'mayfly', [46,56], 'marchBrown', 'brown');
 
 
 //WATERBODY DATA
