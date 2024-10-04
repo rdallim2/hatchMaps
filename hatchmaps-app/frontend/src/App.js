@@ -29,6 +29,7 @@ function App() {
     zoom: 14,
   });
   const [showPopup, setShowPopup] = useState(true);
+  const [bugsLikelyHatching, setBugsLikelyHatching] = useState([]);
 
   useEffect(() => {
     axios.get('http://localhost:5933/temps')
@@ -41,48 +42,68 @@ function App() {
     });
   }, []);
 
-  const updateSites = temps.map(temp => {
-    const matchingSite = sites[temp.idNum];
-    console.log("looking for id num", temp.idNum);
-    if (matchingSite){
-      console.log("Found match.");
-      console.log(matchingSite.lat);
 
-      const dateString = temp.dateTime; // e.g., '07/10/97'
+  useEffect(() => {
+    const newBugsLikelyHatching = [];
 
-      console.log(dateString);
-      const monthNumber = dateString.substring(0, 2); // Convert to integer
+    const updatedSites = temps.map(temp => {
+      const matchingSite = sites[temp.idNum];
+      console.log("Looking for id num", temp.idNum);
 
-      // Get the month name
-      const monthName = monthNames[monthNumber - 1]; // Adjust for zero-based index
+      if (matchingSite) {
+        console.log("Found match.");
+        console.log(matchingSite.lat);
 
-      console.log(monthName); // Output: 'jul'
-      bugsInMonth.forEach(bugName => {
-        const bug = getBugByName(bugName); // Get the corresponding Bug object
-        if (bug) {
-          console.log(bug.hatchTemp[0]);
-        }
-        if (bug.hatchTemp && bug.hatchTemp.length === 2) {
-          const bottomTemp = bug.hatchTemp[0] - 5; // Bottom range
-          const topTemp = bug.hatchTemp[1] + 5; // Top range
-          console.log(bottomTemp);
-          if (bottomTemp <= temp.temp && temp.temp <= topTemp){
-            bugsLikelyHatching.push(bug);
-            console.log("hatching", bugsLikelyHatching);
+        const dateString = temp.dateTime; // e.g., '07/10/97'
+        const monthNumber = dateString.substring(0, 2); // Convert to integer
+        const monthName = monthNames[monthNumber - 1]; // Adjust for zero-based index
+
+        console.log(monthName); // Output: 'jul'
+        
+        console.log(matchingSite.bodyOfWater);
+        console.log(matchingSite.bodyOfWater.bugs);
+
+        Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
+          const bug = bugEntry.bug; // Access the Bug instance
+
+          if (bug.hatchTemp && bug.hatchTemp.length === 2) {
+            const bottomTemp = bug.hatchTemp[0] - 2; // Bottom range
+            const topTemp = bug.hatchTemp[1]; // Top range
+
+            console.log(bottomTemp);
+            console.log(topTemp);
+            console.log(temp.temp);
+            
+            let farTemp = temp.temp;
+            farTemp = celcToFar(farTemp); // Convert temperature to Fahrenheit
+
+            console.log(farTemp);
+            if (bottomTemp <= farTemp && farTemp <= topTemp) {
+              newBugsLikelyHatching.push(bug);
+              console.log("Hatching", bug);
+            }
           }
-        }
-      });
+        });
+        console.log("matching site: ");
+        console.log(matchingSite);
+        console.log(newBugsLikelyHatching);
 
-      return {
-        ...matchingSite,
-        temp: celcToFar(temp.temp),
-        recentLogTime: temp.dateTime,
-        bugsHatching: bugsLikelyHatching
-      };
-    }
+        return {
+          ...matchingSite,
+          temp: celcToFar(temp.temp),
+          recentLogTime: temp.dateTime,
+          bugsHatching: newBugsLikelyHatching, // Store hatching bugs for this site
+        };
 
-    return null;
-  });
+        newBugsLikelyHatching.length = 0;
+      }
+
+      return null;
+    });
+
+    setBugsLikelyHatching(newBugsLikelyHatching);
+
+  }, [temps]); // Run effect when temps change
 
   return (
     <Map //All this taken from documentation
@@ -95,7 +116,19 @@ function App() {
       console.log(Sites);
 
     {showPopup &&
-    updateSites 
+    temps
+      .map(temp => {
+        const matchingSite = sites[temp.idNum]; // Assuming `sites` is defined
+        if (matchingSite) {
+          return {
+            ...matchingSite,
+            temp: celcToFar(temp.temp), // Ensure temp is converted
+            recentLogTime: temp.dateTime,
+            bugsHatching: bugsLikelyHatching, // Use the state that contains the bugs
+          };
+        }
+        return null;
+      })
       .filter(site => site !== null)
       .map((site) => (
         <React.Fragment key={site.id}>
@@ -122,8 +155,8 @@ function App() {
               <div>Temperature: {site.temp}</div>
               <label style={{ marginTop: '20px', fontSize: '1.2em' }}>Bugs Likely To Hatch:</label>
               {site.bugsHatching.map((bug, index) => (
-                <div key={index}>{bug}</div> // Use index as a key, or better yet, use a unique property if available
-              ))};
+                <div key={`${bug.id || bug.name}-${index}`}>{bug.name}</div> // Use bug.id or a combination to create a unique key
+              ))}
             </div>
           </Popup>
         </React.Fragment>
