@@ -1,5 +1,5 @@
 class Site{
-    constructor(id, name, bodyOfWater, lat, long, temp, recentLogTime){
+    constructor(id, name, bodyOfWater, lat, long, temp, recentLogTime, bugsHatching){
         this.id = id;
         this.name = name;
         this.bodyOfWater = bodyOfWater;
@@ -7,6 +7,7 @@ class Site{
         this.long = long;
         this.temp = temp;
         this.recentLogTime = recentLogTime;
+        this.bugsHatching = bugsHatching;
     }
 
 }

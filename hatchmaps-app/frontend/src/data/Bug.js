@@ -1,6 +1,7 @@
 class Bug{
-    constructor(id, order, hatchTemp, size, subspecies, color){
+    constructor(id, name, order, hatchTemp, size, subspecies, color){
         this.id = id;
+        this.name = name;
         this.order = order;
         this.hatchTemp = [];
         this.subspecies = subspecies;
