@@ -5,7 +5,7 @@ class WaterBody{
         this.id = id;
         this.name = name;
         this.waterType = waterType;
-        this.bugs = {};
+        this.bugs = [];
     }
 
   // Method to add a bug and its associated time
