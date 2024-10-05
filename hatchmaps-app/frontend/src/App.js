@@ -5,7 +5,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
 import { sites } from './data/Data';
 import celcToFar from './functions/functions.js';
-
+/*
 const monthNames = [
   'jan', // 0
   'feb', // 1
@@ -20,7 +20,7 @@ const monthNames = [
   'nov', // 10
   'dec'  // 11
 ];
-
+*/
 function App() {
   const [temps, settemps] = useState([]);
   const [viewState, setViewState] = useState({
@@ -28,8 +28,9 @@ function App() {
     longitude: -121.4839433,
     zoom: 14,
   });
-  const [showPopup, setShowPopup] = useState(true);
+  //const [showPopup, setShowPopup] = useState(true);
   const [updatedSites, setUpdatedSites] = useState([]); 
+  const [selectedSite, setSelectedSite] = useState(null);
 
   useEffect(() => {
     axios.get('http://localhost:5933/temps')
@@ -46,14 +47,14 @@ function App() {
   useEffect(() => {
 
     const newUpdatedSites = temps.map(temp => {
-    const matchingSite = sites[temp.idNum];
+      const matchingSite = sites[temp.idNum];
 
       if (matchingSite) {
         const newBugsLikelyHatching = [];
 
-        const dateString = temp.dateTime; // e.g., '07/10/97'
-        const monthNumber = dateString.substring(0, 2); // Convert to integer
-        const monthName = monthNames[monthNumber - 1]; // Adjust for zero-based index
+        //const dateString = temp.dateTime; // e.g., '07/10/97'
+        //const monthNumber = dateString.substring(0, 2); // Convert to integer
+        //const monthName = monthNames[monthNumber - 1]; // Adjust for zero-based index
 
         Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
           const bug = bugEntry.bug; // Access the Bug instance
@@ -81,6 +82,8 @@ function App() {
       return null;
     }).filter(site => site !== null); // Filter out null values
 
+    console.log("Current Updated Sites: ", updatedSites);
+
     if (JSON.stringify(newUpdatedSites) !== JSON.stringify(updatedSites)) {
       setUpdatedSites(newUpdatedSites);
       console.log(newUpdatedSites);
@@ -95,25 +98,31 @@ function App() {
       mapStyle="mapbox://styles/rdallim2/cm1ibsts6000h01rb81k7efth"
       onMove={(evt) => setViewState(evt.viewState)} // Update view state including zoom
     >
-    {showPopup &&
-    updatedSites
-      .map((site) => (
+    {updatedSites.map((site) => (
         <React.Fragment key={site.id}>
           <Marker
             latitude={site.lat}
             longitude={site.long}
             anchor="bottom" // Anchor position
+            key={site.id}
+            onClick={() => {
+              console.log("Marker clicked:", site.id);
+              setSelectedSite(site);
+            }}
           >
-          <LocationOnIcon style={{fontSize: viewState.zoom * 4, color: "red"}} // Customize icon color
-        />
+          <LocationOnIcon 
+            style={{fontSize: viewState.zoom * 4, color: "red"}} // Customize icon color
+          />
           </Marker>
-          <Popup
-            key={site.id} // Always add a unique key when rendering lists in React
-            latitude={site.lat}
-            longitude={site.long}
-            anchor="top"
-            onClose={() => setShowPopup(false)}
-          >
+          {selectedSite && selectedSite.id === site.id && (
+            <Popup
+              //</React.Fragment>key={site.id} // Always add a unique key when rendering lists in React
+              latitude={site.lat}
+              longitude={site.long}
+              anchor="top"
+              onClose={() => setSelectedSite(null)}
+              closeOnClick={false}
+            >
             <div className="card flex-center">
               <div>
                 <label style={{ fontSize: '1.2em' }}>{site.name}</label>
@@ -121,15 +130,17 @@ function App() {
               <div>Recent Log Time: {site.recentLogTime}</div>
               <div>Temperature: {site.temp}</div>
               <label style={{ marginTop: '20px', fontSize: '1.2em' }}>Bugs Likely To Hatch:</label>
-                {site.bugsHatching.length > 0 ? (
-                  site.bugsHatching.map((bug) => (
-                    <div key={bug.id}>{bug.name}</div> // Using bug.id as a unique key
+              <div>{site.bugsHatching.length > 0 ? (
+                site.bugsHatching.map((bug) => (
+                  <div key={bug.id}>{bug.name}</div> // Using bug.id as a unique key
                   ))
                 ) : (
                   <div>No bugs likely to hatch</div> // Fallback message if there are no bugs
                 )}
+              </div>
             </div>
           </Popup>
+          )}
         </React.Fragment>
       ))
     };
