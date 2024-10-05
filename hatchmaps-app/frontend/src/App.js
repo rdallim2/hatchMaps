@@ -29,7 +29,7 @@ function App() {
     zoom: 14,
   });
   const [showPopup, setShowPopup] = useState(true);
-  const [bugsLikelyHatching, setBugsLikelyHatching] = useState([]);
+  const [updatedSites, setUpdatedSites] = useState([]); 
 
   useEffect(() => {
     axios.get('http://localhost:5933/temps')
@@ -44,24 +44,16 @@ function App() {
 
 
   useEffect(() => {
-    const newBugsLikelyHatching = [];
 
-    const updatedSites = temps.map(temp => {
-      const matchingSite = sites[temp.idNum];
-      console.log("Looking for id num", temp.idNum);
+    const newUpdatedSites = temps.map(temp => {
+    const matchingSite = sites[temp.idNum];
 
       if (matchingSite) {
-        console.log("Found match.");
-        console.log(matchingSite.lat);
+        const newBugsLikelyHatching = [];
 
         const dateString = temp.dateTime; // e.g., '07/10/97'
         const monthNumber = dateString.substring(0, 2); // Convert to integer
         const monthName = monthNames[monthNumber - 1]; // Adjust for zero-based index
-
-        console.log(monthName); // Output: 'jul'
-        
-        console.log(matchingSite.bodyOfWater);
-        console.log(matchingSite.bodyOfWater.bugs);
 
         Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
           const bug = bugEntry.bug; // Access the Bug instance
@@ -69,24 +61,15 @@ function App() {
           if (bug.hatchTemp && bug.hatchTemp.length === 2) {
             const bottomTemp = bug.hatchTemp[0] - 2; // Bottom range
             const topTemp = bug.hatchTemp[1]; // Top range
-
-            console.log(bottomTemp);
-            console.log(topTemp);
-            console.log(temp.temp);
-            
             let farTemp = temp.temp;
             farTemp = celcToFar(farTemp); // Convert temperature to Fahrenheit
 
             console.log(farTemp);
             if (bottomTemp <= farTemp && farTemp <= topTemp) {
               newBugsLikelyHatching.push(bug);
-              console.log("Hatching", bug);
             }
           }
         });
-        console.log("matching site: ");
-        console.log(matchingSite);
-        console.log(newBugsLikelyHatching);
 
         return {
           ...matchingSite,
@@ -94,15 +77,14 @@ function App() {
           recentLogTime: temp.dateTime,
           bugsHatching: newBugsLikelyHatching, // Store hatching bugs for this site
         };
-
-        newBugsLikelyHatching.length = 0;
       }
-
       return null;
-    });
+    }).filter(site => site !== null); // Filter out null values
 
-    setBugsLikelyHatching(newBugsLikelyHatching);
-
+    if (JSON.stringify(newUpdatedSites) !== JSON.stringify(updatedSites)) {
+      setUpdatedSites(newUpdatedSites);
+      console.log(newUpdatedSites);
+    }
   }, [temps]); // Run effect when temps change
 
   return (
@@ -113,23 +95,8 @@ function App() {
       mapStyle="mapbox://styles/rdallim2/cm1ibsts6000h01rb81k7efth"
       onMove={(evt) => setViewState(evt.viewState)} // Update view state including zoom
     >
-      console.log(Sites);
-
     {showPopup &&
-    temps
-      .map(temp => {
-        const matchingSite = sites[temp.idNum]; // Assuming `sites` is defined
-        if (matchingSite) {
-          return {
-            ...matchingSite,
-            temp: celcToFar(temp.temp), // Ensure temp is converted
-            recentLogTime: temp.dateTime,
-            bugsHatching: bugsLikelyHatching, // Use the state that contains the bugs
-          };
-        }
-        return null;
-      })
-      .filter(site => site !== null)
+    updatedSites
       .map((site) => (
         <React.Fragment key={site.id}>
           <Marker
@@ -154,9 +121,13 @@ function App() {
               <div>Recent Log Time: {site.recentLogTime}</div>
               <div>Temperature: {site.temp}</div>
               <label style={{ marginTop: '20px', fontSize: '1.2em' }}>Bugs Likely To Hatch:</label>
-              {site.bugsHatching.map((bug, index) => (
-                <div key={`${bug.id || bug.name}-${index}`}>{bug.name}</div> // Use bug.id or a combination to create a unique key
-              ))}
+                {site.bugsHatching.length > 0 ? (
+                  site.bugsHatching.map((bug) => (
+                    <div key={bug.id}>{bug.name}</div> // Using bug.id as a unique key
+                  ))
+                ) : (
+                  <div>No bugs likely to hatch</div> // Fallback message if there are no bugs
+                )}
             </div>
           </Popup>
         </React.Fragment>
