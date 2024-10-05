@@ -17,7 +17,7 @@ class WaterBody{
       };
       this.bugs[bug.name].time.push(time); 
     } 
-    console.log(this.bugs);
+    //console.log(this.bugs);
   }
 
   // Method to get all bugs and their times
