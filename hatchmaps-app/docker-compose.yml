@@ -1,0 +1,37 @@
+version: '3'
+services:
+  server:
+    build:  # This will build the image using the Dockerfile in the current context
+      context: ./server
+      dockerfile: Dockerfile
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: ""  # Set this password as needed
+      DB_NAME: temps
+    depends_on:
+      - mysql
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "80:80"
+    depends_on:
+      - server
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: ""  # Set a password for the root user
+      MYSQL_DATABASE: temps  # Create the temps database
+    ports:
+      - "3306:3306"
+    volumes:
+      - db-data:/var/lib/mysql
+
+
+volumes:
+  db-data:
