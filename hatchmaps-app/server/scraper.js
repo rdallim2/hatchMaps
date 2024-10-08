@@ -17,7 +17,11 @@ const temps = async () => {
     await connection.execute(deleteData);
     console.log("Old data deleted from db");
 
-    const browser = await puppeteer.launch(); //launch the browser
+    const browser = /*await*/ puppeteer.launch({
+	executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,  // Ensure this is set correctly
+        headless: false, // Set to false if you want to see the browser
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }); //launch the browser
     const page = await browser.newPage(); // make new tab
     await page.goto(url); //got to url
 
