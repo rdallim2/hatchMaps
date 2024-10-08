@@ -5,12 +5,10 @@ services:
       context: ./server
       dockerfile: Dockerfile
     environment:
-      DB_HOST: mysql
-      DB_USER: root
-      DB_PASSWORD: ""  # Set this password as needed
-      DB_NAME: temps
-    depends_on:
-      - mysql
+      DB_HOST: ${DB_HOST}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: ${DB_NAME}
 
   client:
     build:
@@ -20,18 +18,3 @@ services:
       - "80:80"
     depends_on:
       - server
-
-  mysql:
-    image: mysql:8.0
-    container_name: mysql-db
-    environment:
-      MYSQL_ROOT_PASSWORD: ""  # Set a password for the root user
-      MYSQL_DATABASE: temps  # Create the temps database
-    ports:
-      - "3306:3306"
-    volumes:
-      - db-data:/var/lib/mysql
-
-
-volumes:
-  db-data:
