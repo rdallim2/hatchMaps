@@ -1,20 +1,19 @@
 import puppeteer from 'puppeteer';
 import mysql from 'mysql2/promise';
 
-const connectionConfig = {
-    host: 'mysql', // or your DB host
-    user: 'root',      // your MySQL username
-    password: '', // your MySQL password
-    database: 'temps' // the name of the database you want to use
-};
 
 const url = "https://waterdata.usgs.gov/or/nwis/current?type=qw&PARAmeter_cds=STATION_NM,DATETIME,00010,00011";
 
 const temps = async () => {
 
-    const connection = await mysql.createConnection(connectionConfig);
+    const connection = await mysql.createConnection({
+        host: process.env.DB_HOST,  // 'db' from docker-compose
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        database: process.env.DB_NAME
+    });
 
-    const deleteData = 'DELETE FROM new_table';
+    const deleteData = 'DELETE FROM water_data';
     await connection.execute(deleteData);
     console.log("Old data deleted from db");
 
@@ -53,7 +52,7 @@ const temps = async () => {
 
     for (let row of trdata) {
         const { idNum, waterBody, dateTime, temp } = row;
-        const query = `INSERT INTO new_table (idNum, waterBody, dateTime, temp) VALUES (?, ?, ?, ?)`;
+        const query = `INSERT INTO water_data (idNum, waterBody, dateTime, temp) VALUES (?, ?, ?, ?)`;
         await connection.execute(query, [idNum, waterBody, dateTime, temp]);
     }
 
