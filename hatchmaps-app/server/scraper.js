@@ -13,7 +13,7 @@ const temps = async () => {
         database: process.env.DB_NAME
     });
 
-    const deleteData = 'DELETE FROM water_data';
+    const deleteData = 'DELETE FROM temp_data';
     await connection.execute(deleteData);
     console.log("Old data deleted from db");
 
@@ -52,7 +52,7 @@ const temps = async () => {
 
     for (let row of trdata) {
         const { idNum, waterBody, dateTime, temp } = row;
-        const query = `INSERT INTO water_data (idNum, waterBody, dateTime, temp) VALUES (?, ?, ?, ?)`;
+        const query = `INSERT INTO temp_data (idNum, waterBody, dateTime, temp) VALUES (?, ?, ?, ?)`;
         await connection.execute(query, [idNum, waterBody, dateTime, temp]);
     }
 
