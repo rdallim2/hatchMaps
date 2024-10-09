@@ -47,16 +47,14 @@ const connection = mysql.createConnection({
   port: 3306
 });
 */
-/*
-connection.connect((err) => {
-    if (err) {
-      console.error('Error connecting to MySQL:', err.stack);
-      return;
-    }
-    console.log('Connected to MySQL as id ' + connection.threadId);
-});
-*/
-await temps();
+
+try {
+    await temps();  // Await the async function
+    console.log("Web scraper completed successfully");
+} catch (error) {
+    console.error("Error running the web scraper:", error);
+}
+
 
 
 cron.schedule('0 * * * *', async () => {

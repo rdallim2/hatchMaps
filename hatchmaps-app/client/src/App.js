@@ -33,7 +33,7 @@ function App() {
   const [selectedSite, setSelectedSite] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:5992/temps')
+    axios.get('http://52.14.199.254:3000/temps')
     .then(response => {
       settemps(response.data);
       console.log("Temps properly fetched from backend.");

@@ -1,11 +1,12 @@
 import puppeteer from 'puppeteer';
 import mysql from 'mysql2/promise';
+import dotenv from 'dotenv';
 
-
+dotenv.config();
 const url = "https://waterdata.usgs.gov/or/nwis/current?type=qw&PARAmeter_cds=STATION_NM,DATETIME,00010,00011";
 
 const temps = async () => {
-
+    
     const connection = await mysql.createConnection({
         host: process.env.DB_HOST,  // 'db' from docker-compose
         user: process.env.DB_USER,
@@ -16,15 +17,20 @@ const temps = async () => {
     const deleteData = 'DELETE FROM temp_data';
     await connection.execute(deleteData);
     console.log("Old data deleted from db");
-
-    const browser = /*await*/ puppeteer.launch({
+    console.log("poop.");
+    if (!process.env.PUPPETEER_EXECUTABLE_PATH) {
+    console.log("PUPPETEER_EXECUTABLE_PATH is not set. Please set the environment variable.");
+    return; // or throw an error, or handle it as needed
+    }
+    const browser = await puppeteer.launch({
 	executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,  // Ensure this is set correctly
-        headless: false, // Set to false if you want to see the browser
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
+        headless: true, // Set to false if you want to see the browser
+        args: ['--no-sandbox', '--disable-setuid-sandbox', "--disable-dev-shm-usage"]
     }); //launch the browser
+    console.log("Browser set");
     const page = await browser.newPage(); // make new tab
     await page.goto(url); //got to url
-
+    console.log("No errors yet.");
     page.on('console', msg => {
         for (let i = 0; i < msg.args().length; ++i) {
             console.log(`PAGE LOG: ${msg.args()[i]}`);
