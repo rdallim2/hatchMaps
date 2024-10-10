@@ -71,8 +71,6 @@ cron.schedule('0 * * * *', async () => {
 
 app.use('/', router);
 
-app.listen(5933, ()=>{
-    const host = 'localhost'; // or use the actual host if needed
-    const port = 5933;
-    console.log(`Backend server is running at http://${host}:${port}`);
+app.listen(3000, '0.0.0.0', () =>{
+    console.log(`Backend server is running at http://0.0.0.0:3000`);
 });
