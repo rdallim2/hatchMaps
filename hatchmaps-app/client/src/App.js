@@ -5,28 +5,13 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
 import { sites } from './data/Data';
 import celcToFar from './functions/functions.js';
-/*
-const monthNames = [
-  'jan', // 0
-  'feb', // 1
-  'mar', // 2
-  'apr', // 3
-  'may', // 4
-  'jun', // 5
-  'jul', // 6
-  'aug', // 7
-  'sep', // 8
-  'oct', // 9
-  'nov', // 10
-  'dec'  // 11
-];
-*/
+
 function App() {
   const [temps, settemps] = useState([]);
   const [viewState, setViewState] = useState({
     latitude: 44.6262275,
     longitude: -121.4839433,
-    zoom: 14,
+    zoom: 6,
   });
   //const [showPopup, setShowPopup] = useState(true);
   const [updatedSites, setUpdatedSites] = useState([]); 
@@ -91,6 +76,10 @@ function App() {
   }, [temps]); // Run effect when temps change
 
   return (
+  <div className="app-container">
+    <header className="header">
+      <h1>HatchMaps</h1>
+    </header>
     <Map //All this taken from documentation
       mapboxAccessToken={process.env.REACT_APP_MAPBOX}
       {...viewState}
@@ -145,6 +134,7 @@ function App() {
       ))
     };
     </Map>
+  </div>
   );
 }
 export default App;
