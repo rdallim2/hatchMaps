@@ -5,6 +5,7 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
 import { sites } from './data/Data';
 import celcToFar from './functions/functions.js';
+import "./custom.css";
 
 function App() {
   const [temps, settemps] = useState([]);
@@ -77,8 +78,26 @@ function App() {
 
   return (
   <div className="app-container">
-    <header className="header">
-      <h1>HatchMaps</h1>
+    <header className="bg-primary text-white py-3">
+      <div className="container">
+        {/* Title Section */}
+        <h1 className="text-center">Hatchmaps</h1>
+        
+        {/* Links Section */}
+        <div className="row justify-content-center">
+          <div className="col-auto">
+            <button className="btn btn-light" disabled>
+              Github
+            </button>
+            <button className="btn btn-light" disabled>
+              Insects
+            </button>
+            <button className="btn btn-light" disabled>
+              Contact
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
     <Map //All this taken from documentation
       mapboxAccessToken={process.env.REACT_APP_MAPBOX}
