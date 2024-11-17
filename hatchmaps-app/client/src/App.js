@@ -23,7 +23,7 @@ function App() {
     axios.get('https://hatchmaps.com/temps')
     .then(response => {
       settemps(response.data);
-      console.log("Temps properly fetched from backend.");
+      console.log("Temps properly fetched from backend:", response.data);
     })
     .catch(error => {
       console.error('error fetching temps:', error);
@@ -58,11 +58,12 @@ function App() {
             }
           }
         });
+        console.log("temp.dateTime:", temp.dateTime);
 
         return {
           ...matchingSite,
           temp: celcToFar(temp.temp),
-          recentLogTime: temp.dateTime,
+          recentLogTime: new Date(temp.dateTime).toLocaleString(),
           bugsHatching: newBugsLikelyHatching, // Store hatching bugs for this site
         };
       }
@@ -79,10 +80,9 @@ function App() {
 
   return (
   <div className="app-container">
-    <div className="container-fluid text-center text-white" style={{ backgroundColor: '#40798c', padding: '5px 0'  }}>
+    <div className="container-fluid text-center text-white" style={{ backgroundColor: '#80a981', padding: '5px 0'}}>
       {/* Title Section */}
       <h1 className="text-center">Hatchmaps</h1>
-      
       {/* Links Section */}
       <div className="row justify-content-center">
         <div className="col">

@@ -76,7 +76,7 @@ const temps = async () => {
     for (let row of trdata) {
         const { idNum, waterBody, dateTime, temp } = row;
         const formattedDateTime = parseDateTime(dateTime);
-        console.log(idNum, waterBody ,dateTime, temp); //Log the data found
+        console.log(idNum, waterBody, dateTime, temp); //Log the data found
         const query = `INSERT INTO temp_data (idNum, waterBody, dateTime, temp) VALUES (?, ?, ?, ?)`;
         await connection.execute(query, [idNum, waterBody, dateTime, temp]);
     }
