@@ -1,6 +1,20 @@
 import puppeteer from 'puppeteer';
 import mysql from 'mysql2/promise';
 import dotenv from 'dotenv';
+import { parse } from 'date-fns-tz'; // For handling time zones
+import { format } from 'date-fns';
+
+const parseDateTime = (dateTimeStr) => {
+    try {
+        // Parse the input string
+        const parsedDate = parse(dateTimeStr, 'MM/dd HH:mm zzz', new Date());
+        // Convert to MySQL DATETIME format
+        return format(parsedDate, 'yyyy-MM-dd HH:mm:ss');
+    } catch (error) {
+        console.error("Error parsing dateTime:", error);
+        return null; // Return null if parsing fails
+    }
+};
 
 dotenv.config();
 const url = "https://waterdata.usgs.gov/or/nwis/current?type=qw&PARAmeter_cds=STATION_NM,DATETIME,00010,00011";
@@ -55,13 +69,14 @@ const temps = async () => {
             const dateTime = tdElements[2]?.textContent.trim() || 'N/A';
             const temp = tdElements[3]?.querySelector('span')?.textContent.trim() || 'N/A';
             
-            console.log(idNum, waterBody ,dateTime, temp); //Log the data found
             return {idNum, waterBody, dateTime, temp};
         });
     });
 
     for (let row of trdata) {
         const { idNum, waterBody, dateTime, temp } = row;
+        const formattedDateTime = parseDateTime(dateTime);
+        console.log(idNum, waterBody ,dateTime, temp); //Log the data found
         const query = `INSERT INTO temp_data (idNum, waterBody, dateTime, temp) VALUES (?, ?, ?, ?)`;
         await connection.execute(query, [idNum, waterBody, dateTime, temp]);
     }
