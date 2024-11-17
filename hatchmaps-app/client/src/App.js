@@ -63,7 +63,7 @@ function App() {
         return {
           ...matchingSite,
           temp: celcToFar(temp.temp),
-          recentLogTime: new Date(temp.dateTime).toLocaleString(),
+          recentLogTime: temp.dateTime,
           bugsHatching: newBugsLikelyHatching, // Store hatching bugs for this site
         };
       }

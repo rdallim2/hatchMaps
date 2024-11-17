@@ -12,6 +12,8 @@ RUN npm run build
 # Stage-2
 FROM nginx:alpine
 
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
 # Copy the static file to my Nginx folder to serve static contain
 COPY --from=builder /app/build /usr/share/nginx/html
 
