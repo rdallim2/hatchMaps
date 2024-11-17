@@ -6,6 +6,7 @@ import axios from 'axios';
 import { sites } from './data/Data';
 import celcToFar from './functions/functions.js';
 import "./custom.css";
+import { Link } from 'react-router-dom'
 
 function App() {
   const [temps, settemps] = useState([]);
@@ -78,27 +79,28 @@ function App() {
 
   return (
   <div className="app-container">
-    <header className="bg-primary text-white py-3">
-      <div className="container">
-        {/* Title Section */}
-        <h1 className="text-center">Hatchmaps</h1>
-        
-        {/* Links Section */}
-        <div className="row justify-content-center">
-          <div className="col-auto">
-            <button className="btn btn-light" disabled>
+    <div className="container-fluid text-center text-white" style={{ backgroundColor: '#40798c', padding: '5px 0'  }}>
+      {/* Title Section */}
+      <h1 className="text-center">Hatchmaps</h1>
+      
+      {/* Links Section */}
+      <div className="row justify-content-center">
+        <div className="col">
+          <a href="https://github.com/rdallim2/hatchMaps" target="_blank" rel="noopener noreferrer">
+            <button className="btn btn-light" >
               Github
             </button>
-            <button className="btn btn-light" disabled>
-              Insects
-            </button>
-            <button className="btn btn-light" disabled>
+          </a>
+        </div>
+        <div className="col">
+          <a href="https://rdallim2.github.io/RyanDallimore_site/" target="_blank" rel="noopener noreferrer">
+            <button className="btn btn-light">
               Contact
             </button>
-          </div>
+          </a>
         </div>
       </div>
-    </header>
+    </div>
     <Map //All this taken from documentation
       mapboxAccessToken={process.env.REACT_APP_MAPBOX}
       {...viewState}
@@ -119,7 +121,11 @@ function App() {
             }}
           >
           <LocationOnIcon 
-            style={{fontSize: viewState.zoom * 4, color: "red"}} // Customize icon color
+            style={{
+              fontSize: viewState.zoom * 4, 
+              color: "red", 
+              backgroundColor: "transparent" // Remove any background color
+            }} 
           />
           </Marker>
           {selectedSite && selectedSite.id === site.id && (

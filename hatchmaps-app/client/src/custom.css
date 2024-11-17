@@ -2,12 +2,23 @@
     font-family: "Poppins", sans-serif;
     font-weight: 300;
     font-style: normal;
+
 }
+
+.container-fluid {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
 
 header.bg-primary {
     font-family: "Poppins", sans-serif;
     font-weight: 300;
     font-style: normal;
+    border:none;
+    outline:none;
+
   }
   
   /* Customize the h1 inside the header */
