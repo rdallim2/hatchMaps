@@ -10,6 +10,7 @@ router.get('/', (req, res)=>{
 router.get("/temps", async (req,res)=>{
     connection.query('SELECT * FROM water_data.temp_data', (error, results, fields) =>{
         if (error) throw error;
+        console.log("Database Results:", results);
         res.json(results);
     })
 });
