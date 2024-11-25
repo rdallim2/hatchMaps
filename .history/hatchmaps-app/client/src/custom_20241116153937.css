@@ -1,0 +1,32 @@
+* {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    background-color: #608d3a;
+}
+.app-container .container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+header.bg-primary {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    border:none;
+    outline:none;
+  }
+  
+  /* Customize the h1 inside the header */
+  header.bg-primary h1 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  /* Customize buttons inside the header */
+  header.bg-primary .btn {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }

@@ -8,7 +8,7 @@ import celcToFar from './functions/functions.js';
 import "./custom.css";
 import { Link } from 'react-router-dom'
 
-const SitePopup = ({ site, onClose }) => (
+const sitePopup = ({ site, onClose }) => (
 <Popup
   //</React.Fragment>key={site.id} // Always add a unique key when rendering lists in React
   latitude={site.lat}
@@ -108,7 +108,7 @@ function App() {
 
   return (
   <div className="app-container">
-    <div className="container-fluid text-center text-white" style={{ backgroundColor: '#80a981'}}>
+    <div className="container-fluid text-center text-white" style={{ backgroundColor: '#80a981', padding: '5px 0'}}>
       {/* Title Section */}
       <h1 className="text-center">Hatchmaps</h1>
       {/* Links Section */}
@@ -158,7 +158,7 @@ function App() {
             />
             </Marker>
             {selectedSite && selectedSite.id === site.id && (
-                <SitePopup site={site} onClose={() => setSelectedSite(null)} />
+                <sitePopup site={site} onClose={() => setSelectedSite(null)} />
             )}
           </React.Fragment>
         ))

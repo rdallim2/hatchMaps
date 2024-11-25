@@ -1,0 +1,37 @@
+* {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    background-color: #608d3a;
+}
+
+/* Remove outline from buttons when focused */
+button:focus, a:focus {
+  outline: none;
+  box-shadow: none; /* This removes the blue border shadow */
+}
+
+/* If you want to add a custom focus style */
+button:focus, a:focus {
+  outline: 2px solid #ff5733; /* Example of a custom focus outline color */
+}
+
+header.bg-primary {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  /* Customize the h1 inside the header */
+  header.bg-primary h1 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  /* Customize buttons inside the header */
+  header.bg-primary .btn {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }

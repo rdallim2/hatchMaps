@@ -1,0 +1,47 @@
+* {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 98vh;
+  width: 105vw
+}
+.map-container {
+  flex-grow: 1; /* Allow the map to take the remaining space */
+  width: 100%; 
+}
+
+.container-fluid {
+  font-family: "Poppins", sans-serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+
+header.bg-primary {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+    border:none;
+    outline:none;
+
+  }
+  
+  /* Customize the h1 inside the header */
+  header.bg-primary h1 {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }
+  
+  /* Customize buttons inside the header */
+  header.bg-primary .btn {
+    font-family: "Poppins", sans-serif;
+    font-weight: 300;
+    font-style: normal;
+  }
