@@ -25,7 +25,7 @@ const temps = async () => {
     }
     const browser = await puppeteer.launch({
 	executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,  // Ensure this is set correctly
-        headless: true, // Set to false if you want to see the browser
+        headless: true, 
         args: ['--no-sandbox', '--disable-setuid-sandbox', "--disable-dev-shm-usage"]
     }); //launch the browser
     console.log("Browser set");
