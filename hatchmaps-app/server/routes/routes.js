@@ -1,6 +1,6 @@
 import express from 'express';
 const router = express.Router();
-import connection from './db.js';
+import pool from './db.js';
 
 router.get('/', (req, res)=>{
     res.status(200);
@@ -8,7 +8,7 @@ router.get('/', (req, res)=>{
 })
 
 router.get("/temps", async (req,res)=>{
-    connection.query('SELECT * FROM water_data.temp_data', (error, results, fields) =>{
+    pool.query('SELECT * FROM water_data.temp_data', (error, results, fields) =>{
         if (error) throw error;
         console.log("Database Results:", results);
         res.json(results);
