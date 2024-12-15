@@ -22,7 +22,7 @@ const connection = mysql.createConnection({
 });
 */
 
-connection.connect((err) => {
+pool.getConnection((err, connection) => {
     if (err) {
       console.error('Error connecting to MySQL:', err.stack);
       return;
@@ -30,4 +30,4 @@ connection.connect((err) => {
     console.log('Connected to MySQL as id ' + connection.threadId);
   });
 
-export default connection;
+export default pool;
