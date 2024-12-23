@@ -73,6 +73,7 @@ function App() {
 
         Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
           const bug = bugEntry.bug; // Access the Bug instance
+          console.log(bug);
 
           if (bug.hatchTemp && bug.hatchTemp.length === 2) {
             const bottomTemp = bug.hatchTemp[0] - 2; // Bottom range
