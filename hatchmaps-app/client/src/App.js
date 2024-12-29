@@ -5,10 +5,14 @@ import LocationOnIcon from '@mui/icons-material/LocationOn';
 import axios from 'axios';
 import { sites } from './data/Data';
 import celcToFar from './functions/functions.js';
-import "./custom.css";
+import "./css/custom.css";
+import "./css/bootstrap.min.css";
 import { Link } from 'react-router-dom'
 
-const SitePopup = ({ site, onClose }) => (
+const SitePopup = ({ site, onClose }) => {
+  const degreeSymbol = '\u00B0';
+
+return (
 <Popup
   //</React.Fragment>key={site.id} // Always add a unique key when rendering lists in React
   latitude={site.lat}
@@ -22,7 +26,7 @@ const SitePopup = ({ site, onClose }) => (
       <label style={{ fontSize: '1.2em' }}>{site.name}</label>
     </div>
     <div>Recent Log Time: {site.recentLogTime}</div>
-    <div>Temperature: {site.temp}</div>
+    <div>Temperature: {site.temp}{degreeSymbol}F</div>
     <label style={{ marginTop: '20px', fontSize: '1.2em' }}>Bugs Likely To Hatch:</label>
     <div>{site.bugsHatching.length > 0 ? (
       site.bugsHatching.map((bug) => (
@@ -35,6 +39,7 @@ const SitePopup = ({ site, onClose }) => (
   </div>
 </Popup>
 );
+};
 
 function App() {
   const [temps, settemps] = useState([]);
@@ -67,15 +72,19 @@ function App() {
       if (matchingSite) {
         const newBugsLikelyHatching = [];
 
-        //const dateString = temp.dateTime; // e.g., '07/10/97'
-        //const monthNumber = dateString.substring(0, 2); // Convert to integer
+        const dateString = temp.dateTime; // e.g., '07/10/97'
+        const monthNumber = dateString.substring(0, 2); // Convert to integer
         //const monthName = monthNames[monthNumber - 1]; // Adjust for zero-based index
 
         Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
           const bug = bugEntry.bug; // Access the Bug instance
           console.log(bug);
+          console.log(bugEntry.time);
+          //console.log(monthNumber);
+          //console.log(typeof(bugEntry.time));
 
-          if (bug.hatchTemp && bug.hatchTemp.length === 2) {
+          if (bug.hatchTemp && bug.hatchTemp.length === 2 && bugEntry.time[0].includes(monthNumber.toString())) {
+            console.log("bug is in valid time");
             const bottomTemp = bug.hatchTemp[0] - 2; // Bottom range
             const topTemp = bug.hatchTemp[1]; // Top range
             let farTemp = temp.temp;
