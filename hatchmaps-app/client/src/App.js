@@ -7,7 +7,6 @@ import { sites } from './data/Data';
 import celcToFar from './functions/functions.js';
 import "./css/custom.css";
 import "./css/bootstrap.min.css";
-import { Link } from 'react-router-dom'
 
 const SitePopup = ({ site, onClose }) => {
   const degreeSymbol = '\u00B0';
@@ -21,11 +20,13 @@ return (
   onClose={onClose}
   closeOnClick={false}
 >
-  <div className="card flex-center">
+  <div className="custom-card flex-center">
     <div>
       <label style={{ fontSize: '1.2em' }}>{site.name}</label>
     </div>
-    <div>Recent Log Time: {site.recentLogTime}</div>
+    <div>
+      <label style={{ fontSize: '1.2em' }}>Recent Log Time: {site.recentLogTime}</label>
+    </div>
     <div>Temperature: {site.temp}{degreeSymbol}F</div>
     <label style={{ marginTop: '20px', fontSize: '1.2em' }}>Bugs Likely To Hatch:</label>
     <div>{site.bugsHatching.length > 0 ? (
@@ -80,7 +81,7 @@ function App() {
           const bug = bugEntry.bug; // Access the Bug instance
           console.log(bug);
           console.log(bugEntry.time);
-          //console.log(monthNumber);
+          console.log("Month number:", monthNumber);
           //console.log(typeof(bugEntry.time));
 
           if (bug.hatchTemp && bug.hatchTemp.length === 2 && bugEntry.time[0].includes(monthNumber.toString())) {
