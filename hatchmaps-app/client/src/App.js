@@ -21,17 +21,24 @@ return (
   closeOnClick={false}
 >
   <div className="custom-card flex-center">
-    <div>
-      <label style={{ fontSize: '1.2em' }}>{site.name}</label>
+    <div className="name">
+      <label style={{ fontSize: '1.2em' , fontWeight: 'bold' , color: 'white'}} >{site.name}</label>
     </div>
-    <div>
-      <label style={{ fontSize: '1.2em' }}>Recent Log Time: {site.recentLogTime}</label>
+    <div className="name" style={{ paddingTop: '10px' }}>
+    <label style={{ fontSize: '1.2em' }}>
+      <span style={{ color: 'white',  paddingBottom: '5px', display: 'inline-block'}}>Recent Log Time:</span>
+      <br />
+      <div className="item" style={{ fontSize: '.9em' }}>
+        {site.recentLogTime}
+        <br />
+        Temperature: {site.temp}{degreeSymbol}F
+      </div>
+    </label>
     </div>
-    <div>Temperature: {site.temp}{degreeSymbol}F</div>
-    <label style={{ marginTop: '20px', fontSize: '1.2em' }}>Bugs Likely To Hatch:</label>
-    <div>{site.bugsHatching.length > 0 ? (
+    <label style={{ marginTop: '20px', fontSize: '1.2em', color: 'white', paddingBottom: '5px', display: 'inline-block'}}>Bugs Likely To Hatch:</label>
+    <div className="item">{site.bugsHatching.length > 0 ? (
       site.bugsHatching.map((bug) => (
-        <div key={bug.id}>{bug.name}</div> // Using bug.id as a unique key
+        <div key={bug.id} style={{ fontSize: '1em' }}>{bug.name}</div> // Using bug.id as a unique key
         ))
       ) : (
         <div>No bugs likely to hatch</div> // Fallback message if there are no bugs

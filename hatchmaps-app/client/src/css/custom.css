@@ -47,7 +47,7 @@ header.bg-primary {
     font-style: normal;
   }
 
-.custom-card  {
+.custom-card{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,8 +56,29 @@ header.bg-primary {
   border: none;
 }
 
+.name {
+  background: rgb(117, 130, 117);
+  width: 100%;
+}
+.item {
+  background:#f9f4e8;
+  width: 100% !important;
+  border-radius: 5px !important;
+  font-size: '1.5em'!important;
+}
+
 .mapboxgl-popup {
   border: none;
   background: transparent;
   width: 20%;
+  border-radius: 10px !important;
 }
+
+.mapboxgl-popup-content {
+  background: rgb(117, 130, 117)!important;
+  padding: 10px 10px 15px !important; 
+  position: relative;
+  box-shadow: 0 0px 0px rgba(0, 0, 0, .1)!important;
+  border-radius: 10px !important;
+}
+
