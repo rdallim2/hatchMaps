@@ -11,179 +11,180 @@ import "./css/bootstrap.min.css";
 const SitePopup = ({ site, onClose }) => {
   const degreeSymbol = '\u00B0';
 
-return (
-<Popup
-  //</React.Fragment>key={site.id} // Always add a unique key when rendering lists in React
-  latitude={site.lat}
-  longitude={site.long}
-  anchor="top"
-  onClose={onClose}
-  closeOnClick={false}
->
-  <div className="custom-card flex-center">
-    <div className="name">
-      <label style={{ fontSize: '1.2em' , fontWeight: 'bold' , color: 'white'}} >{site.name}</label>
-    </div>
-    <div className="name" style={{ paddingTop: '10px' }}>
-    <label style={{ fontSize: '1.2em' }}>
-      <span style={{ color: 'white',  paddingBottom: '5px', display: 'inline-block'}}>Recent Log Time:</span>
-      <br />
-      <div className="item" style={{ fontSize: '.9em' }}>
-        {site.recentLogTime}
-        <br />
-        Temperature: {site.temp}{degreeSymbol}F
+  return (
+    <Popup
+      latitude={site.lat}
+      longitude={site.long}
+      anchor="top"
+      onClose={onClose}
+      closeOnClick={false}
+    >
+      <div className="custom-card flex-center">
+        <div className="name">
+          <label style={{ fontSize: '1.2em' , fontWeight: 'bold' , color: 'white'}} >{site.name}</label>
+        </div>
+        <div className="name" style={{ paddingTop: '10px' }}>
+          <label style={{ fontSize: '1.2em' }}>
+            <span style={{ color: 'white',  paddingBottom: '5px', display: 'inline-block'}}>
+              {site.recentLogTime ? 'Recent Log Time:' : 'Estimated Hatch Information'}
+            </span>
+            <br />
+            <div className="item" style={{ fontSize: '.9em' }}>
+              {site.recentLogTime ? (
+                <>
+                  {site.recentLogTime}
+                  <br />
+                  Temperature: {site.temp}{degreeSymbol}F
+                </>
+              ) : (
+                'Based on typical seasonal patterns'
+              )}
+            </div>
+          </label>
+        </div>
+        <label style={{ marginTop: '20px', fontSize: '1.2em', color: 'white', paddingBottom: '5px', display: 'inline-block'}}>
+          Bugs Likely To Hatch:
+        </label>
+        <div className="item">
+          {site.bugsHatching.length > 0 ? (
+            site.bugsHatching.map((bug) => (
+              <div key={bug.id} style={{ fontSize: '1em' }}>{bug.name}</div>
+            ))
+          ) : (
+            <div>No bugs likely to hatch</div>
+          )}
+        </div>
       </div>
-    </label>
-    </div>
-    <label style={{ marginTop: '20px', fontSize: '1.2em', color: 'white', paddingBottom: '5px', display: 'inline-block'}}>Bugs Likely To Hatch:</label>
-    <div className="item">{site.bugsHatching.length > 0 ? (
-      site.bugsHatching.map((bug) => (
-        <div key={bug.id} style={{ fontSize: '1em' }}>{bug.name}</div> // Using bug.id as a unique key
-        ))
-      ) : (
-        <div>No bugs likely to hatch</div> // Fallback message if there are no bugs
-      )}
-    </div>
-  </div>
-</Popup>
-);
+    </Popup>
+  );
 };
 
 function App() {
-  const [temps, settemps] = useState([]);
+  const [temps, setTemps] = useState([]);
   const [viewState, setViewState] = useState({
     latitude: 44.6262275,
     longitude: -121.4839433,
     zoom: 6,
   });
-  //const [showPopup, setShowPopup] = useState(true);
   const [updatedSites, setUpdatedSites] = useState([]); 
   const [selectedSite, setSelectedSite] = useState(null);
+  const [dataFetchError, setDataFetchError] = useState(false);
 
   useEffect(() => {
     axios.get('https://hatchmaps.com/temps')
-    .then(response => {
-      settemps(response.data);
-      console.log("Temps properly fetched from backend:", response.data);
-    })
-    .catch(error => {
-      console.error('error fetching temps:', error);
-    });
+      .then(response => {
+        setTemps(response.data);
+        console.log("Temps properly fetched from backend:", response.data);
+        setDataFetchError(false);
+      })
+      .catch(error => {
+        console.error('Error fetching temps:', error);
+        setDataFetchError(true);
+      });
   }, []);
 
-
   useEffect(() => {
+    // Determine the current month for fallback scenarios
+    const currentDate = new Date();
+    const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
 
-    const newUpdatedSites = temps.map(temp => {
+    const processedSites = (dataFetchError ? Object.values(sites) : temps.map(temp => {
       const matchingSite = sites[temp.idNum];
 
       if (matchingSite) {
         const newBugsLikelyHatching = [];
-
-        const dateString = temp.dateTime; // e.g., '07/10/97'
-        const monthNumber = dateString.substring(0, 2); // Convert to integer
-        //const monthName = monthNames[monthNumber - 1]; // Adjust for zero-based index
+        const monthNumber = dataFetchError ? currentMonth : temp.dateTime.substring(0, 2);
 
         Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
-          const bug = bugEntry.bug; // Access the Bug instance
-          console.log(bug);
-          console.log(bugEntry.time);
-          console.log("Month number:", monthNumber);
-          //console.log(typeof(bugEntry.time));
+          const bug = bugEntry.bug;
 
-          if (bug.hatchTemp && bug.hatchTemp.length === 2 && bugEntry.time[0].includes(monthNumber.toString())) {
-            console.log("bug is in valid time");
-            const bottomTemp = bug.hatchTemp[0] - 2; // Bottom range
-            const topTemp = bug.hatchTemp[1]; // Top range
-            let farTemp = temp.temp;
-            farTemp = celcToFar(farTemp); // Convert temperature to Fahrenheit
+          if (bug.hatchTemp && bug.hatchTemp.length === 2 && bugEntry.time[0].includes(monthNumber)) {
+            // When data fetch fails, use a default temperature for checking
+            const bottomTemp = bug.hatchTemp[0] - 2;
+            const topTemp = bug.hatchTemp[1];
+            let farTemp = dataFetchError 
+              ? (bottomTemp + topTemp) / 2  // Use midpoint of temp range as fallback
+              : celcToFar(temp.temp);
 
-            console.log(farTemp);
             if (bottomTemp <= farTemp && farTemp <= topTemp) {
               newBugsLikelyHatching.push(bug);
             }
           }
         });
-        console.log("temp.dateTime:", temp.dateTime);
 
         return {
           ...matchingSite,
-          temp: celcToFar(temp.temp),
-          recentLogTime: temp.dateTime,
-          bugsHatching: newBugsLikelyHatching, // Store hatching bugs for this site
+          temp: dataFetchError ? null : celcToFar(temp.temp),
+          recentLogTime: dataFetchError ? null : temp.dateTime,
+          bugsHatching: newBugsLikelyHatching,
         };
       }
       return null;
-    }).filter(site => site !== null); // Filter out null values
+    })).filter(site => site !== null);
 
-    console.log("Current Updated Sites: ", updatedSites);
-
-    if (JSON.stringify(newUpdatedSites) !== JSON.stringify(updatedSites)) {
-      setUpdatedSites(newUpdatedSites);
-      console.log(newUpdatedSites);
+    if (JSON.stringify(processedSites) !== JSON.stringify(updatedSites)) {
+      setUpdatedSites(processedSites);
     }
-  }, [temps]); // Run effect when temps change
+  }, [temps, dataFetchError]); 
 
   return (
-  <div className="app-container">
-    <div className="container-fluid text-center text-white" style={{ backgroundColor: '#80a981'}}>
-      {/* Title Section */}
-      <h1 className="text-center">Hatchmaps</h1>
-      {/* Links Section */}
-      <div className="row justify-content-center">
-        <div className="col">
-          <a href="https://github.com/rdallim2/hatchMaps" target="_blank" rel="noopener noreferrer">
-            <button className="btn btn-light" >
-              Github
-            </button>
-          </a>
+    <div className="app-container">
+      <div className="container-fluid text-center text-white" style={{ backgroundColor: '#80a981'}}>
+        <h1 className="text-center">Hatchmaps</h1>
+        <div className="row justify-content-center">
+          <div className="col">
+            <a href="https://github.com/rdallim2/hatchMaps" target="_blank" rel="noopener noreferrer">
+              <button className="btn btn-light">Github</button>
+            </a>
+          </div>
+          <div className="col">
+            <a href="https://rdallim2.github.io/RyanDallimore_site/" target="_blank" rel="noopener noreferrer">
+              <button className="btn btn-light">Contact</button>
+            </a>
+          </div>
         </div>
-        <div className="col">
-          <a href="https://rdallim2.github.io/RyanDallimore_site/" target="_blank" rel="noopener noreferrer">
-            <button className="btn btn-light">
-              Contact
-            </button>
-          </a>
-        </div>
+        {dataFetchError && (
+          <div className="alert alert-warning">
+            Using estimated data due to server connection issues
+          </div>
+        )}
+      </div>
+      <div className="map-container">
+        <Map
+          mapboxAccessToken={process.env.REACT_APP_MAPBOX}
+          {...viewState}
+          style={{width: "100%", height: "100%"}}
+          mapStyle="mapbox://styles/rdallim2/cm1ibsts6000h01rb81k7efth"
+          onMove={(evt) => setViewState(evt.viewState)}
+        >
+          {updatedSites.map((site) => (
+            <React.Fragment key={site.id}>
+              <Marker
+                latitude={site.lat}
+                longitude={site.long}
+                anchor="bottom"
+                onClick={() => {
+                  console.log("Marker clicked:", site.id);
+                  setSelectedSite(site);
+                }}
+              >
+                <LocationOnIcon 
+                  style={{
+                    fontSize: viewState.zoom * 4, 
+                    color: dataFetchError ? "orange" : "red", 
+                    backgroundColor: "transparent"
+                  }} 
+                />
+              </Marker>
+              {selectedSite && selectedSite.id === site.id && (
+                <SitePopup site={site} onClose={() => setSelectedSite(null)} />
+              )}
+            </React.Fragment>
+          ))}
+        </Map>
       </div>
     </div>
-    <div className="map-container">
-      <Map //All this taken from documentation
-        mapboxAccessToken={process.env.REACT_APP_MAPBOX}
-        {...viewState}
-        style={{width: "100%", height: "100%"}}
-        mapStyle="mapbox://styles/rdallim2/cm1ibsts6000h01rb81k7efth"
-        onMove={(evt) => setViewState(evt.viewState)} // Update view state including zoom
-      >
-      {updatedSites.map((site) => (
-          <React.Fragment key={site.id}>
-            <Marker
-              latitude={site.lat}
-              longitude={site.long}
-              anchor="bottom" // Anchor position
-              key={site.id}
-              onClick={() => {
-                console.log("Marker clicked:", site.id);
-                setSelectedSite(site);
-              }}
-            >
-            <LocationOnIcon 
-              style={{
-                fontSize: viewState.zoom * 4, 
-                color: "red", 
-                backgroundColor: "transparent" // Remove any background color
-              }} 
-            />
-            </Marker>
-            {selectedSite && selectedSite.id === site.id && (
-                <SitePopup site={site} onClose={() => setSelectedSite(null)} />
-            )}
-          </React.Fragment>
-        ))
-      };
-      </Map>
-    </div>
-  </div>
   );
 }
+
 export default App;
