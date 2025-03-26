@@ -73,59 +73,81 @@ function App() {
   useEffect(() => {
     axios.get('https://hatchmaps.com/temps')
       .then(response => {
-        setTemps(response.data);
-        console.log("Temps properly fetched from backend:", response.data);
-        setDataFetchError(false);
+        if (response.data && response.data.length > 0) {
+          setTemps(response.data);
+          console.log("Temps properly fetched from backend:", response.data);
+          setDataFetchError(false);
+        } else {
+          console.log("Temps returned empty");
+          setDataFetchError(true);
+        }
       })
       .catch(error => {
         console.error('Error fetching temps:', error);
         setDataFetchError(true);
       });
   }, []);
-
   useEffect(() => {
-    // Determine the current month for fallback scenarios
     const currentDate = new Date();
     const currentMonth = (currentDate.getMonth() + 1).toString().padStart(2, '0');
 
-    const processedSites = (dataFetchError ? Object.values(sites) : temps.map(temp => {
-      const matchingSite = sites[temp.idNum];
-
-      if (matchingSite) {
+    let processedSites = [];
+    if (dataFetchError) {
+      // Fallback: use all sites and the current month to determine bugs
+      console.log("using fallback data");
+      processedSites = Object.values(sites).map(site => {
         const newBugsLikelyHatching = [];
-        const monthNumber = dataFetchError ? currentMonth : temp.dateTime.substring(0, 2);
-
-        Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
+        const monthNumber = currentMonth;
+        Object.entries(site.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
           const bug = bugEntry.bug;
-
           if (bug.hatchTemp && bug.hatchTemp.length === 2 && bugEntry.time[0].includes(monthNumber)) {
-            // When data fetch fails, use a default temperature for checking
             const bottomTemp = bug.hatchTemp[0] - 2;
             const topTemp = bug.hatchTemp[1];
-            let farTemp = dataFetchError 
-              ? (bottomTemp + topTemp) / 2  // Use midpoint of temp range as fallback
-              : celcToFar(temp.temp);
-
+            const farTemp = (bottomTemp + topTemp) / 2; // default midpoint value
             if (bottomTemp <= farTemp && farTemp <= topTemp) {
               newBugsLikelyHatching.push(bug);
             }
           }
         });
-
         return {
-          ...matchingSite,
-          temp: dataFetchError ? null : celcToFar(temp.temp),
-          recentLogTime: dataFetchError ? null : temp.dateTime,
+          ...site,
+          temp: null,
+          recentLogTime: null,
           bugsHatching: newBugsLikelyHatching,
         };
-      }
-      return null;
-    })).filter(site => site !== null);
-
-    if (JSON.stringify(processedSites) !== JSON.stringify(updatedSites)) {
-      setUpdatedSites(processedSites);
+      });
+    } else {
+      // Use temperature data from backend
+      processedSites = temps.map(temp => {
+        const matchingSite = sites[temp.idNum];
+        if (matchingSite) {
+          const newBugsLikelyHatching = [];
+          // Use the month from the temperature log
+          const monthNumber = temp.dateTime.substring(0, 2);
+          Object.entries(matchingSite.bodyOfWater.bugs).forEach(([bugName, bugEntry]) => {
+            const bug = bugEntry.bug;
+            if (bug.hatchTemp && bug.hatchTemp.length === 2 && bugEntry.time[0].includes(monthNumber)) {
+              const bottomTemp = bug.hatchTemp[0] - 2;
+              const topTemp = bug.hatchTemp[1];
+              const farTemp = celcToFar(temp.temp);
+              if (bottomTemp <= farTemp && farTemp <= topTemp) {
+                newBugsLikelyHatching.push(bug);
+              }
+            }
+          });
+          return {
+            ...matchingSite,
+            temp: celcToFar(temp.temp),
+            recentLogTime: temp.dateTime,
+            bugsHatching: newBugsLikelyHatching,
+          };
+        }
+        return null;
+      }).filter(site => site !== null);
     }
-  }, [temps, dataFetchError]); 
+
+    setUpdatedSites(processedSites);
+  }, [temps, dataFetchError]);
 
   return (
     <div className="app-container">
@@ -144,7 +166,7 @@ function App() {
           </div>
         </div>
         {dataFetchError && (
-          <div className="alert alert-warning">
+          <div className="alert alert-warning" style={{ marginTop: '20px' }}>
             Using estimated data due to server connection issues
           </div>
         )}
@@ -171,7 +193,7 @@ function App() {
                 <LocationOnIcon 
                   style={{
                     fontSize: viewState.zoom * 4, 
-                    color: dataFetchError ? "orange" : "red", 
+                    color: "red", 
                     backgroundColor: "transparent"
                   }} 
                 />
